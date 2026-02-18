@@ -1,0 +1,105 @@
+openapi: 3.0.1
+info:
+  title: Agente Clinico - Actions API
+  version: 1.0.0
+  description: API institucional para integrações futuras do Agente Clinico
+
+servers:
+  - url: https://seu-servidor-clinico.local/api
+
+paths:
+  /rag/query:
+    post:
+      summary: Consulta estruturada a diretrizes
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                source_priority:
+                  type: string
+                  enum: [brazil_only, brazil_first_then_international]
+      responses:
+        '200':
+          description: Resultado da busca
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        title:
+                          type: string
+                        institution:
+                          type: string
+                        url:
+                          type: string
+                        excerpt:
+                          type: string
+
+  /medication/check:
+    post:
+      summary: Consulta de medicamento com base brasileira
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                drug_name:
+                  type: string
+      responses:
+        '200':
+          description: Dados regulatórios e alerta
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  contraindications:
+                    type: string
+                  warnings:
+                    type: string
+                  source_url:
+                    type: string
+
+  /state/update:
+    post:
+      summary: Atualização do estado clínico estruturado
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                episode_id:
+                  type: string
+                patch:
+                  type: array
+                  items:
+                    type: object
+      responses:
+        '200':
+          description: Estado atualizado
+
+  /audit/report:
+    get:
+      summary: Relatório de auditoria clínica
+      parameters:
+        - in: query
+          name: episode_id
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Log de auditoria estruturado
